@@ -1,0 +1,63 @@
+<html>
+<head>
+<script>
+window.onload = function () {
+	var oBtn = document.getElementById('createBtn');
+	oBtn.onclick = function () {
+		var textarea = document.getElementById('inputText');
+		var text = textarea.value
+		text = text.replace(/[ ]+/g, function(){
+			return '';
+		});
+		var reg = ',\n';
+		var arr = text.split(reg);
+		var resultStr = "";
+		var mResultStr = "-(instancetype)initWithJson:(JSON *)json{\n    if (self = [super init]) {\n        NSDictionary<NSString *,JSON *> *dictionaryValue = json.dictionaryValue;\n";
+		for (var i = 0; i < arr.length; i++) {
+			var eArr = arr[i].split(/\":/g);
+			var left = eArr[0].replace(/\"/g,function(){
+				return '';
+			});
+			var upLeft = left.replace(/_./g, function(m){				
+				return m.substring(1,m.length).toUpperCase();
+			});
+			var right = eArr[1];
+
+			var type = "@property(nonatomic,strong)NSString *";
+			var mType = "stringValue";
+			if (/^\d+$/.test(right)){
+				type = "@property(nonatomic,assign)int ";
+				mType = "intValue";
+			}else if (/^\d*\.\d*$/.test(right)){
+				type = "@property(nonatomic,assign)double ";
+				mType = "doubleValue";
+			}else if (/^{/.test(right)){
+				type = "@property(nonatomic,strong)NSDictionary<NSString *,JSON *> *";
+				mType = "dictionaryValue";
+			}else if (/^true|false$/.test(right)){
+				if (right!=null) {
+					type = "@property(nonatomic,assign)BOOL ";
+					mType = "boolValue";
+				};
+			}else if (/^\[/.test(right)){
+				type = "@property(nonatomic,strong)NSArray<JSON *> *";
+				mType = "arrayValue";
+			}
+			var eResultStr = type + upLeft + ";\n";
+			var mEResultStr = "        self." + upLeft + " = dictionaryValue[@\"" + left + "\"]." + mType + ";\n";
+			resultStr += eResultStr;
+			mResultStr += mEResultStr;
+		};
+		textarea.value = resultStr +"-(instancetype)initWithJson:(JSON *)json;" + "\n\n" + mResultStr + "    }\n    return self;\n}";
+	};
+}
+</script>
+</head>
+<body>
+<input type="button" value="create" id="createBtn"></input>
+</br>
+<textarea name="inputText" style='width:600px;height:600px' id='inputText'>"user_id"  :  1,
+"name":"ly",
+"c_la":30.9</textarea>
+</body>
+</html>

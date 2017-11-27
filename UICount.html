@@ -1,0 +1,21 @@
+<html>
+<head>
+<script>
+window.onload = function () {
+	var oBtn = document.getElementById('createBtn');
+	oBtn.onclick = function () {
+		var textarea = document.getElementById('inputText');
+		var text = textarea.value;
+		var commonStr = "common:\nwidth:" + parseFloat(text)/640*600/2 + "\n" + "height:" + parseFloat(text)/1136*600/2 + "\n";
+		var iphone6Str = "iphone6:\nwidth:" + parseFloat(text)/640*750/2 + "\n" + "height:" + parseFloat(text)/1136*1334/2;
+		textarea.value = commonStr + iphone6Str;
+	};
+}
+</script>
+</head>
+<body>
+<input type="button" value="create" id="createBtn"></input>
+</br>
+<textarea name="inputText" style='width:600px;height:600px' id='inputText'>126</textarea>
+</body>
+</html>
